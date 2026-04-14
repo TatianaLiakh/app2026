@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">app2026</string>
+    <string name="movie_detail">Movie details</string>
+    <string name="back_button">back</string>
 </resources>
