@@ -3,9 +3,13 @@ package com.example.app2026.ui.screens
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,42 +20,57 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.app2026.models.Movie
 import com.example.app2026.utils.Constants
+import com.example.app2026.viewmodel.SelectedMovieUiState
 
 @Composable
-fun MovieDetailScreen(movie: Movie,
-                      modifier: Modifier = Modifier) {
-    Column {
-        Box {
-            AsyncImage(
-                model = Constants.BACKDROP_IMAGE_BASE_URL +
-                        Constants.BACKDROP_IMAGE_BASE_WIDTH +
-                        movie.backdropPath,
-                contentDescription = movie.title,
-                modifier = Modifier,
-                contentScale = ContentScale.Crop
+fun MovieDetailScreen(
+    selectedMovieUiState: SelectedMovieUiState,
+    modifier: Modifier = Modifier
+) {
+    when (selectedMovieUiState) {
+        is SelectedMovieUiState.Success -> {
+            Column(Modifier.width(IntrinsicSize.Max)) {
+                Box(Modifier.fillMaxWidth().padding(0.dp)) {
+                    coil.compose.AsyncImage(
+                        model = Constants.BACKDROP_IMAGE_BASE_URL + Constants.BACKDROP_IMAGE_BASE_WIDTH + selectedMovieUiState.movie.backdropPath,
+                        contentDescription = selectedMovieUiState.movie.title,
+                        modifier = modifier,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Text(
+                    text = selectedMovieUiState.movie.title,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = selectedMovieUiState.movie.releaseDate,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(
+                    text = selectedMovieUiState.movie.overview,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+            }
+        }
+        is SelectedMovieUiState.Loading -> {
+            Text(
+                text = "Loading...",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(16.dp)
             )
         }
-        Column {
+        is SelectedMovieUiState.Error -> {
             Text(
-                text = movie.title,
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-
-            Text(
-                text = movie.releaseDate,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-
-            Text(
-                text = movie.overview,
+                text = "Error...",
                 style = MaterialTheme.typography.bodySmall,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
+                modifier = Modifier.padding(16.dp)
             )
-            Spacer(modifier = Modifier.size(8.dp))
-
         }
     }
+
 }
